@@ -1,0 +1,258 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import Base, User, Item, Category
+
+engine = create_engine('sqlite:///itemCatalogs.db')
+
+Base.metadata.bind = engine
+database_session = sessionmaker(bind=engine)
+session = database_session()
+
+dumb_user = User(username="any anyone", email="anything8@yahoo.com",
+                 picture='https://pbs.twimg.com/profile_images\
+                 /2671170543/18debd694829ed78203a5a36dd364160_400x400.png')
+
+session.add(dumb_user)
+session.commit()
+
+# category 1
+category1 = Category(name='Vegetables')
+session.add(category1)
+session.commit()
+
+item1Category1 = Item(name='carrots',
+                      description='this is a species from vegetables',
+                      category=category1)
+session.add(item1Category1)
+session.commit()
+
+item2Category1 = Item(name='Asparagus',
+                      description='this is a species from vegetables',
+                      category=category1)
+session.add(item2Category1)
+session.commit()
+
+item3Category1 = Item(name='Cardoon',
+                      description='this is a species from vegetables',
+                      category=category1)
+session.add(item3Category1)
+session.commit()
+
+item4Category1 = Item(name='Celeriac',
+                      description='this is a species from vegetables',
+                      category=category1)
+session.add(item4Category1)
+session.commit()
+
+#############################################################
+# category 2
+category2 = Category(name='fish')
+session.add(category2)
+session.commit()
+
+item1Category1 = Item(name='African glass catfish',
+                      description='this is a species from fishs',
+                      category=category2)
+session.add(item1Category1)
+session.commit()
+
+item2Category1 = Item(name='Asparagus',
+                      description='this is a species from fishs',
+                      category=category2)
+session.add(item2Category1)
+session.commit()
+
+item3Category1 = Item(name='Bolty',
+                      description='this is a species from fishs',
+                      category=category2)
+session.add(item3Category1)
+session.commit()
+
+item4Category1 = Item(name='Celeriac',
+                      description='this is a species from fishs',
+                      category=category2)
+session.add(item4Category1)
+session.commit()
+
+#######################################################
+# category 3
+category3 = Category(name='market')
+session.add(category3)
+session.commit()
+
+item1Category1 = Item(name='Perfect Competition',
+                      description='this is a species from market',
+                      category=category3)
+session.add(item1Category1)
+session.commit()
+
+item2Category1 = Item(name='Monopolistic Competition',
+                      description='this is a species from market',
+                      category=category3)
+session.add(item2Category1)
+session.commit()
+
+item3Category1 = Item(name='Oligopoly',
+                      description='this is a species from market',
+                      category=category3)
+session.add(item3Category1)
+session.commit()
+
+item4Category1 = Item(name='Monopoly',
+                      description='this is a species from market',
+                      category=category3)
+session.add(item4Category1)
+session.commit()
+
+##################################################################
+# category 4
+category4 = Category(name='sports')
+session.add(category4)
+session.commit()
+
+item1Category1 = Item(name='Archery',
+                      description='this is a species from sports',
+                      category=category4)
+session.add(item1Category1)
+session.commit()
+
+item2Category1 = Item(name='Athletics',
+                      description='this is a species from sports',
+                      category=category4)
+session.add(item2Category1)
+session.commit()
+
+item3Category1 = Item(name='Bobsleigh',
+                      description='this is a species from sports',
+                      category=category4)
+session.add(item3Category1)
+session.commit()
+
+item4Category1 = Item(name='Boxing',
+                      description='this is a species from sports',
+                      category=category4)
+session.add(item4Category1)
+session.commit()
+
+###########################################################################
+# category 5
+category5 = Category(name='phones')
+session.add(category5)
+session.commit()
+
+item1Category1 = Item(name='sony',
+                      description='this is a species from phones',
+                      category=category5)
+session.add(item1Category1)
+session.commit()
+
+item2Category1 = Item(name='samsung',
+                      description='this is a species from phones',
+                      category=category5)
+session.add(item2Category1)
+session.commit()
+
+item3Category1 = Item(name='iphone',
+                      description='this is a species from phones',
+                      category=category5)
+session.add(item3Category1)
+session.commit()
+
+item4Category1 = Item(name='huwawei',
+                      description='this is a species from phones',
+                      category=category5)
+session.add(item4Category1)
+session.commit()
+
+########################################################################
+# category 6
+category6 = Category(name='TVs')
+session.add(category6)
+session.commit()
+
+item1Category1 = Item(name='sony',
+                      description='this is a species from TVs',
+                      category=category6)
+session.add(item1Category1)
+session.commit()
+
+item2Category1 = Item(name='samsung',
+                      description='this is a species from TVs',
+                      category=category6)
+session.add(item2Category1)
+session.commit()
+
+item3Category1 = Item(name='qompaq',
+                      description='this is a species from TVs',
+                      category=category6)
+session.add(item3Category1)
+session.commit()
+
+item4Category1 = Item(name='dell',
+                      description='this is a species from TVs',
+                      category=category6)
+session.add(item4Category1)
+session.commit()
+
+###############################################################
+# category 7
+category7 = Category(name='Laptops')
+session.add(category7)
+session.commit()
+
+item1Category1 = Item(name='dell',
+                      description='this is a species from Laptops',
+                      category=category7)
+session.add(item1Category1)
+session.commit()
+
+item2Category1 = Item(name='lenovo',
+                      description='this is a species from Laptops',
+                      category=category7)
+session.add(item2Category1)
+session.commit()
+
+item3Category1 = Item(name='sony',
+                      description='this is a species from Laptops',
+                      category=category7)
+session.add(item3Category1)
+session.commit()
+
+item4Category1 = Item(name='accer',
+                      description='this is a species from Laptops',
+                      category=category7)
+session.add(item4Category1)
+session.commit()
+
+##############################################################
+# category 8
+category8 = Category(name='schools')
+session.add(category8)
+session.commit()
+
+item1Category1 = Item(name='secondary',
+                      description='this is a species from schools',
+                      category=category8)
+session.add(item1Category1)
+session.commit()
+
+item2Category1 = Item(name='primary',
+                      description='this is a species from schools',
+                      category=category8)
+session.add(item2Category1)
+session.commit()
+
+item3Category1 = Item(name='quadratic',
+                      description='this is a species from schools',
+                      category=category8)
+session.add(item3Category1)
+session.commit()
+
+item4Category1 = Item(name='high school',
+                      description='this is a species from schools',
+                      category=category8)
+session.add(item4Category1)
+session.commit()
+
+
+print("added Successfully")

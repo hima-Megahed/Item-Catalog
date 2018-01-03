@@ -1,0 +1,46 @@
+{% extends "main.html" %}
+{% include "header.html" %}
+{% block content %}
+
+<!--
+<div class='flash'>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+
+    <ul>
+        {% for message in messages %}
+        <li><strong> {{ message }} </strong></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+</div>
+-->
+
+<div class="row p-5">
+    <div class="col-lg-4" style="border-right: solid 1px #DF691A">
+        <span class="badge badge-pill badge-dark ml-5 mb-4"><h2>Categories</h2></span>
+        {% for category in categories %}
+        <h3>
+        <a href="{{url_for('show_category', category=category.name)}}" class="no-underline">
+            {{category.name}}
+        </a>
+            </h3>
+        {% endfor %}
+    </div>
+
+
+    <div class="col-lg-8">
+        <span class="badge badge-pill badge-dark ml-5 mb-4"><h2>Latest Items</h2></span>
+        {% for i in range(10) %}
+        <h3>
+        <a href="{{url_for('get_description', category=items_added[i][1], item=items_added[i][0].name)}}">
+            {{items_added[i][0].name}}
+            </a>
+            <small class="item-description text-muted" style="font-style: italic">( {{items_added[i][1]}} )</small>
+        </h3>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "main.html" %}
+{% include "header.html" %}
+{% block content %}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="page-header">
+            <h1 id="containers"></h1>
+        </div>
+        <div class="bs-component">
+            <div class="jumbotron">
+                <h1 class="display-3">{{category.name}}</h1>
+                <p class="lead">Category Discription</p>
+                <a href="{{url_for('edit_category', category=category.name)}}">
+                    <button type="button" class="btn btn-outline-info col-3">
+                        Edit
+                    </button>
+                </a>
+                <a href="{{url_for('delete_category', category=category.name)}}">
+                    <button type="button" class="btn btn-outline-danger col-4">
+                        Delete
+                    </button>
+                </a>
+                <hr class="my-4">
+                <p>
+                    {% for item in items %}
+                <h4>
+                    <a href="{{url_for('get_description', category=category.name, item=item.name)}}">
+                        {{item.name}}
+                    </a>
+                </h4>
+                {% endfor %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
