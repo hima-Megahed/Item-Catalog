@@ -8,8 +8,6 @@ import string
 
 
 Base = declarative_base()
-secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                     for x in range(32))
 
 
 class User(Base):
@@ -35,6 +33,9 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    owner = relationship(User)
+    items = relationship('Item', cascade='all, delete-orphan')
 
     @property
     def serialize(self):
@@ -54,6 +55,8 @@ class Item(Base):
     description = Column(String)
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    owner = relationship(User)
 
     @property
     def serialize(self):

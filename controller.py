@@ -1,5 +1,10 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for,\
-    flash
+from flask import (Flask,
+                   render_template,
+                   request,
+                   redirect,
+                   jsonify,
+                   url_for,
+                   flash)
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, User, Item, Category
@@ -43,7 +48,7 @@ def main_page():
                            items_added=last_items_cats)
 
 
-@app.route('/<category>/Items')
+@app.route('/<path:category>/Items')
 def show_category(category):
     """This function shows specific category based on it's name"""
     category = session.query(Category).filter_by(name=category).first()
@@ -66,7 +71,7 @@ def catalogs_json():
     return jsonify(categories=[get_categories(cat) for cat in my_cats])
 
 
-@app.route('/<category>/<item>')
+@app.route('/<path:category>/<path:item>')
 def get_description(category, item):
     """This function Gets the details about item"""
     category = session.query(Category).filter_by(name=category).first()
@@ -79,8 +84,9 @@ def get_description(category, item):
 def add_category():
     """This function Adds new Category"""
     if 'username' in login_session:
-        if request.method == 'POST':
-            new_category = Category(name=request.form['name'])
+        if request.method == 'POST' and request.form['name']:
+            user = get_user_info(login_session['user_id'])
+            new_category = Category(name=request.form['name'], owner=user)
             session.add(new_category)
             session.commit()
             return redirect(url_for('main_page'))
@@ -90,35 +96,46 @@ def add_category():
         return redirect(url_for('show_login'))
 
 
-@app.route('/<category>/Edit', methods=['GET', 'POST'])
+@app.route('/<path:category>/Edit', methods=['GET', 'POST'])
 def edit_category(category):
     """This function Edit existing Category"""
     if 'username' in login_session:
-        cat = session.query(Category).filter_by(name=category).first()
-        if request.method == 'POST':
-            if request.form['name']:
-                cat.name = request.form['name']
-                session.add(cat)
-                session.commit()
-            return redirect(url_for('main_page'))
+        if login_session['user_id'] == \
+           get_category_owner(category):
+            cat = session.query(Category).filter_by(name=category).first()
+            if request.method == 'POST':
+                if request.form['name']:
+                    cat.name = request.form['name']
+                    session.add(cat)
+                    session.commit()
+                return redirect(url_for('main_page'))
+            else:
+                return render_template('edit_category.html', category=cat)
         else:
-            return render_template('edit_category.html', category=cat)
+            flash("snap! You are NOT Authorized To Edit this Category")
+            flash("Create a category so that you can edit or delete")
+            return redirect(url_for('add_category'))
     else:
         return redirect(url_for('show_login'))
 
 
-@app.route('/<category>/Delete', methods=['GET', 'POST'])
+@app.route('/<path:category>/Delete', methods=['GET', 'POST'])
 def delete_category(category):
     """This function Delete Specific Category"""
     if 'username' in login_session:
-        cat = session.query(Category).filter_by(name=category).first()
-        if request.method == 'POST':
-            if request.form['name']:
+        if login_session['user_id'] == \
+                get_category_owner(category):
+            cat = session.query(Category).filter_by(name=category).first()
+            if request.method == 'POST':
                 session.delete(cat)
                 session.commit()
-            return redirect(url_for('main_page'))
+                return redirect(url_for('main_page'))
+            else:
+                return render_template('delete_category.html', category=cat)
         else:
-            return render_template('delete_category.html', category=cat)
+            flash("snap! You are NOT Authorized To Delete this Category")
+            flash("Create a category so that you can edit or delete")
+            return redirect(url_for('add_category'))
     else:
         return redirect(url_for('show_login'))
 
@@ -131,9 +148,10 @@ def add_item():
             selected_category_name = request.form.get('categories')
             category = session.query(Category).filter_by(
                 name=selected_category_name).first()
+            user = get_user_info(login_session['user_id'])
             new_item = Item(name=request.form['name'],
                             description=request.form['description'],
-                            category=category)
+                            category=category, owner=user)
             session.add(new_item)
             session.commit()
             return redirect(url_for('show_category', category=category.name))
@@ -144,56 +162,68 @@ def add_item():
         return redirect(url_for('show_login'))
 
 
-@app.route('/<category_name>/<item>/Edit', methods=['GET', 'POST'])
+@app.route('/<category_name>/<path:item>/Edit', methods=['GET', 'POST'])
 def edit_item(category_name, item):
     """This function Edit an existing item"""
     if 'username' in login_session:
-        if request.method == 'POST':
-            selected_category_name = request.form.get('categories')
-            new_category = session.query(Category).filter_by(
-                name=selected_category_name).first()
-            old_category = session.query(Category).filter_by(
-                name=category_name).first()
-            edited_item = session.query(Item).filter_by(category=old_category,
-                                                        name=item).first()
-            edited_item.name = request.form['name']
-            edited_item.description = request.form['description']
-            edited_item.category = new_category
-            session.add(edited_item)
-            session.commit()
-            return redirect(url_for('get_description', item=edited_item.name,
-                                    category=new_category.name))
+        if login_session['user_id'] == \
+                get_item_owner(item, category_name):
+            if request.method == 'POST':
+                selected_category_name = request.form.get('categories')
+                new_category = session.query(Category).filter_by(
+                    name=selected_category_name).first()
+                old_category = session.query(Category).filter_by(
+                    name=category_name).first()
+                edited_item = session.query(Item).filter_by(category=old_category,
+                                                            name=item).first()
+                edited_item.name = request.form['name']
+                edited_item.description = request.form['description']
+                edited_item.category = new_category
+                session.add(edited_item)
+                session.commit()
+                return redirect(url_for('get_description', item=edited_item.name,
+                                        category=new_category.name))
+            else:
+                categories = session.query(Category).all()
+                category = session.query(Category).filter_by(name=category_name).\
+                    first()
+                item = session.query(Item).filter_by(category=category,
+                                                     name=item).first()
+                return render_template('edit_item.html', categories=categories,
+                                       item=item)
         else:
-            categories = session.query(Category).all()
-            category = session.query(Category).filter_by(name=category_name).\
-                first()
-            item = session.query(Item).filter_by(category=category,
-                                                 name=item).first()
-            return render_template('edit_item.html', categories=categories,
-                                   item=item)
+            flash("snap! You are NOT Authorized To Edit this Item")
+            flash("Create an Item so that you can edit or delete")
+            return redirect(url_for('add_item'))
     else:
         return redirect(url_for('show_login'))
 
 
-@app.route('/<category>/<item>/Delete', methods=['GET', 'POST'])
+@app.route('/<path:category>/<path:item>/Delete', methods=['GET', 'POST'])
 def delete_item(category, item):
     """This function delete an item"""
     if 'username' in login_session:
-        if request.method == 'POST':
-            category = session.query(Category).filter_by(
-                name=category).first()
-            item = session.query(Item).filter_by(category=category,
-                                                 name=item).first()
-            session.delete(item)
-            session.commit()
-            return redirect(url_for('show_category', category=category.name))
+        if login_session['user_id'] == \
+                get_item_owner(item, category):
+            if request.method == 'POST':
+                category = session.query(Category).filter_by(
+                    name=category).first()
+                item = session.query(Item).filter_by(category=category,
+                                                     name=item).first()
+                session.delete(item)
+                session.commit()
+                return redirect(url_for('show_category', category=category.name))
+            else:
+                category = session.query(Category).filter_by(
+                    name=category).first()
+                item = session.query(Item).filter_by(category=category,
+                                                     name=item).first()
+                return render_template('delete_item.html', category=category,
+                                       item=item)
         else:
-            category = session.query(Category).filter_by(
-                name=category).first()
-            item = session.query(Item).filter_by(category=category,
-                                                 name=item).first()
-            return render_template('delete_item.html', category=category,
-                                   item=item)
+            flash("snap! You are NOT Authorized To Edit this Item")
+            flash("Create an Item so that you can edit or delete")
+            return redirect(url_for('add_item'))
     else:
         return redirect(url_for('show_login'))
 
@@ -473,6 +503,29 @@ def get_user_info(user_id):
     """This function retrieves user info"""
     user = session.query(User).filter_by(id=user_id).one()
     return user
+
+
+def get_category_owner(category):
+    """This function retrieves category owner id"""
+    # noinspection PyBroadException
+    try:
+        cat = session.query(Category).filter_by(name=category).first()
+        return cat.user_id
+    except Exception:
+        return None
+
+
+def get_item_owner(item, category_name):
+    """This function retrieves item owner id"""
+    # noinspection PyBroadException
+    try:
+        category = session.query(Category).filter_by(
+            name=category_name).first()
+        item = session.query(Item).filter_by(category=category,
+                                             name=item).first()
+        return item.user_id
+    except Exception:
+        return None
 
 
 def get_user_id(email):

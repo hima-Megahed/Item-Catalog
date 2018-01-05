@@ -1,22 +1,25 @@
-# Item-Catalog
+**Item Catalog**
+====================
+----------
 
-<h3>About</h3>
-an application that provides a list of items within a variety of categories as well as provide a user registration and authentication system. Registered users will have the ability to post, edit and delete items.
+About
+-------
+
+> Item Catalog is an application that provides a list of items within a variety of categories as well as provide a user registration and authentication system. Registered users will have the ability to post, edit and delete items.
+
+Prerequisits
+------------
+
+ 1. Vagrant
+ 2. Virtual Box
+ 3. python3
+ 4. SQLAlchemy
 
 
-<h3>Prerequisits</h3>
-<ul>
-<li>Vagrant</li>
-<li>Virtual Box</li>
-<li>python3</li>
-<li>SQLAlchemy</li>
-</ul>
+How To Run
+-------
 
-<h3>How To Run</h3>
-<ul>
-<li>SetUp Vagrant</li>
-<li>SetUp Virtual Box</li>
-<li>Run Command `vagrant up`</li>
-<li>Run Command `vagrant ssh`</li>
-<li>Run Command `python controller.py`</li>
-</ul>
+ 1. SetUp Virtual Box
+ 2. Run Command `vagrant up`
+ 3. Run Command `vagrant ssh`
+ 4. Run Command `python controller.py`
