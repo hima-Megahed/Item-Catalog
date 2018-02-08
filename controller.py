@@ -315,7 +315,9 @@ def google_connect():
     user_id = get_user_id(login_session['email'])
     if not user_id:
         user_id = create_user(login_session)
-        login_session['user_id'] = user_id
+
+    login_session['user_id'] = user_id
+    print(user_id)
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
